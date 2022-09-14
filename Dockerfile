@@ -28,9 +28,7 @@ RUN yarn --prod
 COPY . .
 
 COPY --from=build /usr/src/app/dist ./dist
-ARG PORT
-ENV PORT ${PORT}
-RUN echo ${APP_ENV}
-EXPOSE ${PORT}
+
+EXPOSE 80
 
 CMD ["node", "dist/main"]

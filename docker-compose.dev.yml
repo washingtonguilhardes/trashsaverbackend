@@ -1,7 +1,7 @@
 version: '3.9'
 services:
-  tjrnlocaldb:
-    container_name: tjrnlocaldb
+  tsdb:
+    container_name: tsdb
     image: mcr.microsoft.com/mssql/server:2019-latest
     user: root
     ports:

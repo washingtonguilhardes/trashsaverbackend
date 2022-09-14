@@ -1,13 +1,14 @@
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { join } from 'path';
 
-export const databaseProvider = () => {
+export const databaseProvider = (): TypeOrmModuleOptions => {
   return {
     type: 'mssql',
-    host: process.env.APP_DATABASE_HOST,
-    port: Number(process.env.APP_DATABASE_PORT),
-    username: process.env.APP_DATABASE_USERNAME,
-    password: process.env.APP_DATABASE_PASSWORD,
-    database: process.env.APP_DATABASE_NAME,
+    host: process.env.INSTANCE_HOST,
+    port: parseInt(process.env.DB_PORT),
+    username: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
     entities: [join(__dirname, '..', '**', '**', '*.entity{.ts,.js}')],
     synchronize: false,
     extra: {
