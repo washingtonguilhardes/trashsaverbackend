@@ -1,0 +1,72 @@
+# Docker
+# Build and push an image to Azure Container Registry
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+- master
+
+resources:
+- repo: self
+
+variables:
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: 'ca603788-4f9d-43df-8985-1f0eca5d5af7'
+  imageRepository: 'teamstjrnnotificationsystemback'
+  containerRegistry: 'acrteamsalerthubpd01.azurecr.io'
+  dockerfilePath: '$(Build.SourcesDirectory)/dockerfile'
+  tag: '$(Build.BuildId)'
+
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+
+stages:
+- stage: Build
+  displayName: Build and push stage
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
+          latest
+
+- stage: Production
+  displayName: Deploy to production web app
+  jobs:
+    - job: Publish_To_WebApp
+      displayName: Publish To Production WebApp
+      pool:
+        vmImage: $(vmImageName)
+      steps:
+        - task: AzureRmWebAppDeployment@4
+          inputs:
+            ConnectionType: 'AzureRM'
+            azureSubscription: 'TJRN - NOTIFICATION SYSTEM'
+            appType: 'webAppContainer'
+            WebAppName: 'teamstjrnnotificationsystembackend'
+            DockerNamespace: 'acrteamsalerthubpd01.azurecr.io'
+            DockerRepository: 'teamstjrnnotificationsystemback'
+            DockerImageTag: 'latest'
+            AppSettings: '-PORT "$(PORT)" -APP_DATABASE_HOST "$(APP_DATABASE_HOST)" -APP_DATABASE_NAME "$(APP_DATABASE_NAME)" -APP_DATABASE_USERNAME "$(APP_DATABASE_USERNAME)" -APP_DATABASE_PASSWORD "$(APP_DATABASE_PASSWORD)" -APP_DATABASE_PORT "$(APP_DATABASE_PORT)" -MSAL_OAUTH_CLIENT_ID "$(MSAL_OAUTH_CLIENT_ID)" -MSAL_OAUTH_CLIENT_SECRET "$(MSAL_OAUTH_CLIENT_SECRET)" -MSAL_OAUTH_SCOPES "$(MSAL_OAUTH_SCOPES)" -MSAL_OAUTH_AUTHORITY "$(MSAL_OAUTH_AUTHORITY)" -APP_SA_USERNAME "$(APP_SA_USERNAME)" -APP_SA_PASSWORD "$(APP_SA_PASSWORD)" -APP_BROADCAST_SENDER_URL "$(APP_BROADCAST_SENDER_URL)" -AZURE_STORAGE_SAS_KEY "$(AZURE_STORAGE_SAS_KEY)" -AZURE_STORAGE_ACCOUNT "$(AZURE_STORAGE_ACCOUNT)" -AZURE_STORAGE_THUMBNAILS_CONTAINER "$(AZURE_STORAGE_THUMBNAILS_CONTAINER)" -AZURE_STORAGE_ASSETS_CONTAINER "$(AZURE_STORAGE_ASSETS_CONTAINER)" -AZ_BS_CONNECTION_STRING "$(AZ_BS_CONNECTION_STRING)" -MSAL_TENANT_ID "$(MSAL_TENANT_ID)" -MSAL_OAUTH_REDIRECT_URI "$(MSAL_OAUTH_REDIRECT_URI)"'
+        - task: AzureAppServiceManage@0
+          displayName: Stop Web App
+          inputs:
+            azureSubscription: 'TJRN - NOTIFICATION SYSTEM'
+            Action: 'Stop Azure App Service'
+            WebAppName: 'teamstjrnnotificationsystembackend'
+        - task: AzureAppServiceManage@0
+          displayName: Start Web App
+          inputs:
+            azureSubscription: 'TJRN - NOTIFICATION SYSTEM'
+            Action: 'Start Azure App Service'
+            WebAppName: 'teamstjrnnotificationsystembackend'
+

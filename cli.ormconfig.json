@@ -1,0 +1,18 @@
+{
+  "type": "mssql",
+  "host": "localhost",
+  "port": 51433,
+  "username": "sa",
+  "password": "Pass@word123",
+  "database": "master",
+  "entities": ["./**/**/*.entity{.ts,.js}"],
+  "migrations": ["./**/database/migrations/*.ts"],
+  "synchronize": false,
+  "cli": {
+    "migrationsDir": "./src/database/migrations/",
+    "entitiesDir": "./src/**/**/*.entity{.ts,.js}"
+  },
+  "extra": {
+    "trustServerCertificate": true
+  }
+}

@@ -1,0 +1,19 @@
+version: '3.9'
+services:
+  tjrnlocaldb:
+    container_name: tjrnlocaldb
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    user: root
+    ports:
+      - 51433:1433
+    restart: always
+    env_file:
+      - '.env'
+    volumes:
+      - mssqldata:/var/opt/mssql/data
+      - mssqllog:/var/opt/mssql/log
+      - mssqlssecrets:/var/opt/mssql/secrets
+volumes:
+  mssqldata:
+  mssqllog:
+  mssqlssecrets:
