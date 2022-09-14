@@ -28,7 +28,7 @@ jobs:
 
       # build image
       - name: Build Docker image
-        run: docker build -t $IMAGE_NAME .
+        run: docker build --build_arg PORT=${{ secrets.PORT }} -t $IMAGE_NAME .
 
       # push image to registry
       - name: Push Docker image

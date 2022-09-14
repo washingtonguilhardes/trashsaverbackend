@@ -1,4 +1,4 @@
-FROM node:14-bullseye As build
+FROM node:14-alpine As build
 
 WORKDIR /usr/src/app
 
@@ -15,7 +15,7 @@ COPY . .
 RUN yarn run build
 
 
-FROM node:14-bullseye as production
+FROM node:14-alpine as production
 
 WORKDIR /usr/src/app
 
@@ -28,7 +28,9 @@ RUN yarn --prod
 COPY . .
 
 COPY --from=build /usr/src/app/dist ./dist
-
+ARG PORT
+ENV PORT ${PORT}
+RUN echo ${APP_ENV}
 EXPOSE ${PORT}
 
 CMD ["node", "dist/main"]
