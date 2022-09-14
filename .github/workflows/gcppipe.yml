@@ -16,7 +16,7 @@ jobs:
       DB_USER: ${{ secrets.GCP_DB_USER }}
       DB_PASS: ${{ secrets.GCP_DB_PASS }}
       DB_NAME: ${{ secrets.GCP_DB_NAME }}
-      VCP_CONNECTOR: ${{ secrets.GCP_CLOUDSQL_INSTANCE }}
+      VCP_CONNECTOR: ${{ secrets.VCP_CONNECTOR }}
     steps:
       # Git checkout
       - name: Checkout
