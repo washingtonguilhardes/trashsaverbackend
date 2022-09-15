@@ -8,6 +8,7 @@ import { databaseProvider } from './database/datasource.provider';
 import { UserAddressModule } from './user-address/user-address.module';
 import { UserModule } from './user/user.module';
 import { TrashShareModule } from './trash-share/trash-share.module';
+import { TrashCollectModule } from './trash-collect/trash-collect.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { TrashShareModule } from './trash-share/trash-share.module';
     UserModule,
     UserAddressModule,
     TrashShareModule,
+    TrashCollectModule,
   ],
   controllers: [AppController],
   providers: [AppService],
