@@ -4,6 +4,7 @@ enum DefaultApplicationException {
   PARAMETER_NOT_FOUND = 'PARAMETER_NOT_FOUND',
   INVALID_PARAMETER = 'INVALID_PARAMETER',
   OBJECT_NOT_FOUND = 'OBJECT_NOT_FOUND',
+  EXECUTION_EXCEPTION = 'EXECUTION_EXCEPTION',
 }
 export class ApplicationException extends HttpException {
   private exceptionCode = 'UNKNOW_ERROR';
@@ -12,16 +13,32 @@ export class ApplicationException extends HttpException {
 
   private metas: { value: string; key: string }[] = [];
 
-  constructor(message: string, exceptionCode: string, code = HttpStatus.BAD_REQUEST) {
+  private errors: string[] = [];
+
+  constructor(
+    message: string,
+    exceptionCode: string,
+    code = HttpStatus.BAD_REQUEST,
+    previous?: Error & { errors?: string[] }
+  ) {
     super(message, code);
     this.exceptionCode = exceptionCode;
-    if (process.env.NODE_ENV === 'development') {
-      this.logger.error(`${code}: ${message}`);
+    this.logger.error(`[${code}]: ${message}`);
+    if (previous) {
+      this.errors = previous.errors ?? [];
+      this.logger.error(
+        `[PREVIOUS] ${previous.name}: ${previous.message}, ${previous.errors?.join(', ')}`
+      );
+      this.logger.error(previous.stack);
     }
   }
 
   getExceptionCode() {
     return this.exceptionCode;
+  }
+
+  getErrors() {
+    return this.errors;
   }
 
   addMeta(key, value = '') {
@@ -32,16 +49,19 @@ export class ApplicationException extends HttpException {
     return this.metas;
   }
 
-  static parameterNotFound<T>(parameter: keyof T, message = '') {
+  static parameterNotFound<T>(parameters: Array<keyof T>, message = '') {
     return new ApplicationException(
-      `Campo '${String(parameter)}' não informado. ${message}`.trim(),
+      `Parameters '${parameters.join()}' not found on request body. ${message}`.trim(),
       DefaultApplicationException.PARAMETER_NOT_FOUND
     );
   }
 
-  static invalidParameter<T = Record<string, string>>(parameter: keyof T, message = '') {
+  static invalidParameter<T = Record<string, string>>(
+    parameters: Array<keyof T>,
+    message = ''
+  ) {
     return new ApplicationException(
-      `Campo '${String(parameter)}' inválido. ${message}`.trim(),
+      `Invalid parameters ${parameters.join()}. ${message}`.trim(),
       DefaultApplicationException.INVALID_PARAMETER
     );
   }
@@ -50,6 +70,15 @@ export class ApplicationException extends HttpException {
     return new ApplicationException(
       message.trim(),
       DefaultApplicationException.OBJECT_NOT_FOUND
+    );
+  }
+
+  static executionException(message: string, previous?: Error & { errors?: string[] }) {
+    return new ApplicationException(
+      message.trim(),
+      DefaultApplicationException.EXECUTION_EXCEPTION,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      previous
     );
   }
 }

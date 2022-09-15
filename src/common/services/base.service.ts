@@ -1,6 +1,8 @@
+import { ApplicationException } from '@app/app.exception';
 import { FindConditions, FindOneOptions, Repository } from 'typeorm';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
-export abstract class BaseService<Entity, CreateDto = unknown, UpdateDto = unknown> {
+export abstract class BaseService<Entity, CreateDto = unknown> {
   constructor(private readonly repository: Repository<Entity>) {}
 
   getQueryBuilder(alias?: string) {
@@ -23,9 +25,18 @@ export abstract class BaseService<Entity, CreateDto = unknown, UpdateDto = unkno
     return this.repository.findOne({ where: { id } });
   }
 
-  async update(id: string, updateCategoryDto: UpdateDto) {
-    await this.repository.update(id, updateCategoryDto);
-    return this.findOne(id);
+  async update(id: string, updateCategoryDto: QueryDeepPartialEntity<Entity>) {
+    const entity = await this.findOne(id);
+    if (!entity) {
+      throw ApplicationException.objectNotFound('Invalid update id. Entity not found');
+    }
+
+    try {
+      await this.repository.update(id, updateCategoryDto);
+      return this.findOne(id);
+    } catch (error) {
+      throw ApplicationException.executionException('Unable to update', error);
+    }
   }
 
   async remove(criteria: FindConditions<Entity> | string) {

@@ -8,7 +8,7 @@ import {
   SetMetadata,
 } from '@nestjs/common';
 import { ApplicationException } from './app.exception';
-import { UserCapabity } from './user-access-control/entities/user-access-control.entity';
+import { UserRole } from './user/entities/user.entity';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -20,7 +20,7 @@ export class AuthGuard implements CanActivate {
   }
 }
 
-export const Scopes = (...scopes: UserCapabity[]) => SetMetadata('scopes', scopes);
+export const Scopes = (...scopes: UserRole[]) => SetMetadata('scopes', scopes);
 
 export interface UserAccessCheckData {
   user: any;
