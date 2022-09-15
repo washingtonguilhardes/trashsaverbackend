@@ -1,3 +1,4 @@
+import { TrashShare } from '@app/trash-share/entities/trash-share.entity';
 import { UserAddress } from '@app/user-address/entities/user-address.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -25,4 +26,7 @@ export class User {
 
   @OneToMany(() => UserAddress, address => address.user)
   addresses: UserAddress[];
+
+  @OneToMany(() => TrashShare, share => share.user)
+  shares: TrashShare[];
 }

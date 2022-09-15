@@ -21,8 +21,12 @@ export abstract class BaseService<Entity, CreateDto = unknown> {
     });
   }
 
-  findOne(id: string) {
-    return this.repository.findOne({ where: { id } });
+  findOne(
+    id: string,
+    where?: FindConditions<Entity>,
+    relations: FindOneOptions<Entity>['relations'] = []
+  ) {
+    return this.repository.findOne({ where: { id, ...where }, relations });
   }
 
   async update(id: string, updateCategoryDto: QueryDeepPartialEntity<Entity>) {

@@ -5,6 +5,7 @@ enum DefaultApplicationException {
   INVALID_PARAMETER = 'INVALID_PARAMETER',
   OBJECT_NOT_FOUND = 'OBJECT_NOT_FOUND',
   EXECUTION_EXCEPTION = 'EXECUTION_EXCEPTION',
+  VALIDATION_EXCEPTION = 'VALIDATION_EXCEPTION',
 }
 export class ApplicationException extends HttpException {
   private exceptionCode = 'UNKNOW_ERROR';
@@ -25,7 +26,7 @@ export class ApplicationException extends HttpException {
     this.exceptionCode = exceptionCode;
     this.logger.error(`[${code}]: ${message}`);
     if (previous) {
-      this.errors = previous.errors ?? [];
+      this.errors = previous.errors ?? [previous.message];
       this.logger.error(
         `[PREVIOUS] ${previous.name}: ${previous.message}, ${previous.errors?.join(', ')}`
       );
@@ -78,6 +79,15 @@ export class ApplicationException extends HttpException {
       message.trim(),
       DefaultApplicationException.EXECUTION_EXCEPTION,
       HttpStatus.INTERNAL_SERVER_ERROR,
+      previous
+    );
+  }
+
+  static validationException(message: string, previous?: Error & { errors?: string[] }) {
+    return new ApplicationException(
+      message.trim(),
+      DefaultApplicationException.EXECUTION_EXCEPTION,
+      HttpStatus.BAD_REQUEST,
       previous
     );
   }
