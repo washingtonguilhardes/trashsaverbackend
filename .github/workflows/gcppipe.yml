@@ -12,10 +12,10 @@ jobs:
     env:
       IMAGE_NAME: gcr.io/${{ secrets.GCP_PROJECT_ID }}/trashsaver:latest
       CLOUDSQL_INSTANCE: ${{ secrets.GCP_CLOUDSQL_INSTANCE }}
-      INSTANCE_HOST: ${{ secrets.GCP_INSTANCE_HOST }}
-      DB_USER: ${{ secrets.GCP_DB_USER }}
-      DB_PASS: ${{ secrets.GCP_DB_PASS }}
-      DB_NAME: ${{ secrets.GCP_DB_NAME }}
+      INSTANCE_HOST: ${{ secrets.INSTANCE_HOST }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASS: ${{ secrets.DB_PASS }}
+      DB_NAME: ${{ secrets.DB_NAME }}
       VCP_CONNECTOR: ${{ secrets.VCP_CONNECTOR }}
     steps:
       # Git checkout
