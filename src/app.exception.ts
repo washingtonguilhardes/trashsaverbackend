@@ -86,7 +86,7 @@ export class ApplicationException extends HttpException {
   static validationException(message: string, previous?: Error & { errors?: string[] }) {
     return new ApplicationException(
       message.trim(),
-      DefaultApplicationException.EXECUTION_EXCEPTION,
+      DefaultApplicationException.VALIDATION_EXCEPTION,
       HttpStatus.BAD_REQUEST,
       previous
     );
