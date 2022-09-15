@@ -31,12 +31,12 @@ export class UserAddressService extends BaseService<UserAddress> {
     try {
       await userAddressValidator.validate(createUserAddressDto, { abortEarly: false });
     } catch (previous) {
-      throw ApplicationException.executionException('Invalid user address.', previous);
+      throw ApplicationException.validationException('Invalid user address.', previous);
     }
 
     const user = await this.userService.findOne(userId);
     if (!user) {
-      throw ApplicationException.executionException('User not fount with provided id');
+      throw ApplicationException.validationException('User not fount with provided id');
     }
 
     try {

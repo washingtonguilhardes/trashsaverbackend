@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { databaseProvider } from './database/datasource.provider';
 import { UserAddressModule } from './user-address/user-address.module';
 import { UserModule } from './user/user.module';
+import { TrashShareModule } from './trash-share/trash-share.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { UserModule } from './user/user.module';
     ConfigModule.forRoot(),
     UserModule,
     UserAddressModule,
+    TrashShareModule,
   ],
   controllers: [AppController],
   providers: [AppService],

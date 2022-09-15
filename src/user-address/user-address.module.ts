@@ -9,5 +9,6 @@ import { UserAddressService } from './user-address.service';
   controllers: [UserAddressController],
   providers: [UserAddressService],
   imports: [TypeOrmModule.forFeature([UserAddress]), UserModule],
+  exports: [UserAddressService],
 })
 export class UserAddressModule {}
