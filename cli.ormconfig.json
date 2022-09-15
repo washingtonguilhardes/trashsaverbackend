@@ -4,7 +4,7 @@
   "port": 51433,
   "username": "sa",
   "password": "Pass@word123",
-  "database": "master",
+  "database": "trashsaverdb",
   "entities": ["./**/**/*.entity{.ts,.js}"],
   "migrations": ["./**/database/migrations/*.ts"],
   "synchronize": false,

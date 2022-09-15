@@ -27,6 +27,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
         : exception.code || 'UNKNOW';
 
     const metas = exception instanceof ApplicationException ? exception.getMetas() : [];
+    const errors = exception instanceof ApplicationException ? exception.getErrors() : [];
 
     const response =
       typeof message === 'string'
@@ -36,6 +37,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
             error: 'Bad Request',
           }
         : message;
+    response.errors = errors;
     const path = this.httpAdapter.getRequestUrl(ctx.getRequest());
     const method = this.httpAdapter.getRequestMethod(ctx.getRequest());
 
