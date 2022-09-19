@@ -20,6 +20,7 @@ async function bootstrap() {
 
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
   app.use(compression());
+  app.setGlobalPrefix('/api/v1');
 
   await app.listen(app.get(ConfigService).get('PORT') ?? 3000);
 }
