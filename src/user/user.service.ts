@@ -2,7 +2,7 @@ import { ApplicationException } from '@app/app.exception';
 import { BaseService } from '@app/common';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User, UserRole } from './entities/user.entity';
 
@@ -16,21 +16,26 @@ export class UserService extends BaseService<User> {
   }
 
   async create(createUserDto: CreateUserDto) {
-    const { roles = [], useremail, username, externalId } = createUserDto;
+    const { roles = [], useremail, username } = createUserDto;
 
-    if (!useremail || !username || !externalId) {
+    if (!useremail || !username) {
       throw ApplicationException.invalidParameter<CreateUserDto>([
         'useremail',
         'username',
-        'externalId',
       ]);
+    }
+    const registeredUser = await this.userRepository.findOne({
+      useremail: Like(useremail),
+    });
+    if (registeredUser) {
+      return registeredUser;
     }
 
     try {
       return await this.userRepository.save({
         useremail,
         username,
-        externalId,
+        externalId: '',
         roles,
       });
     } catch (error) {
